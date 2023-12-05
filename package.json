@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "vite build",
+    "start:dev": "node server.js",
     "start": "nodemon server.js",
     "seed": "node ./db/seedData.js"
   },
