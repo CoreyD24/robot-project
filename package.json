@@ -9,6 +9,7 @@
     "seed": "node ./db/seedData.js"
   },
   "dependencies": {
+    "env": "^0.0.2",
     "express": "^4.18.2",
     "nodemon": "^3.0.2",
     "pg": "^8.11.3",
