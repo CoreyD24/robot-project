@@ -10,8 +10,7 @@ app.get('/', (req, res) => {
     res.send(`<h1>Hello World!</h1>`);
 });
 
-// Router: /api
-//app.use('/api', require('./api'));
+app.use('/api', require('./api/index'));
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);

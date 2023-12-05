@@ -1,8 +1,9 @@
-const client = require("./client")
+const client = require("./client");
+const createRobotOwners = require("./robotOwners");
+const createRobotTasks = require("./robotTasks");
 
     const dropTables = async() => {
         try{
-            console.log(`Dropping tables...`)
             await client.query(`
             DROP TABLE IF EXISTS robot_tasks;
             DROP TABLE IF EXISTS robot_owners;
@@ -16,7 +17,6 @@ const client = require("./client")
 
     const createTables = async() => {
     try{
-        console.log(`Building tables...`)
         await client.query(`
         CREATE TABLE robots (
             id SERIAL PRIMARY KEY, 
@@ -39,14 +39,14 @@ const client = require("./client")
             name VARCHAR(30) NOT NULL
         );
         CREATE TABLE robot_owners (
-            robot_id INT NOT NULL,
-            owner_id INT NOT NULL
+            robot_id INT REFERENCES robots(id) NOT NULL,
+            owner_id INT REFERENCES owners(id) NOT NULL
         );
         CREATE TABLE robot_tasks (
-            robot_id INT NOT NULL,
-            task_id INT NOT NULL
+            robot_id INT REFERENCES robots(id) NOT NULL,
+            task_id INT REFERENCES tasks(id) NOT NULL
         );
-            `);
+        `);
     }
     catch (error){
         console.log(error)
@@ -55,21 +55,28 @@ const client = require("./client")
 
 const createInitialData = async() => {
     try {
-        console.log(`Creating initial data...`)
         await client.query(`
         INSERT INTO robots (name, model, company, img, warranty_months, child_safe, release_date)
         VALUES 
-        ('Jimbo', 'B650', 'Amazon', 'https://m.media-amazon.com/images/I/61pt2leRDZS._AC_SL1500_.jpg', 24, true, 'January 1, 2024')`
+        ('Jimbo', 'B650', 'Amazon', 'https://m.media-amazon.com/images/I/61pt2leRDZS._AC_SL1500_.jpg', 24, true, 'January 1, 2024'),
+        ('Roger', 'T-598', 'Tesla', 'https://hasbropulse.com/cdn/shop/products/F5526_PROD_SW_BL_ALEXANDRIA_369_Online_2000SQ_2000x.jpg?v=1651684256', 6, false, 'January 1, 2050'),
+        ('Artoo', 'R2-D2', 'Industrial Automation', 'https://api.time.com/wp-content/uploads/2017/12/r2d2.jpg', 3600, true, 'January 1, 3500'),
+        ('DJ Roomba', 'VH-651', 'iRobot', 'https://static.wikia.nocookie.net/parksandrecreation/images/e/e5/DJ_Roomba_goes_camping.jpg/revision/latest?cb=20131031044858', 6, true, 'February 4, 2010')`
         );
         await client.query(`
         INSERT INTO owners (first_name, last_name, email)
         VALUES
-        ('Elon', 'Musk', 'elonmusk@tesla.com')`
+        ('Elon', 'Musk', 'elonmusk@tesla.com'),
+        ('Jeff', 'Bezos', 'jeffbezos@amazon.com'),
+        ('Padme', 'Amidala', 'padmeadmidala@naboo.com')`
         );
         await client.query(`
         INSERT INTO tasks (name)
         VALUES 
-        ('wash dishes')`
+        ('wash dishes'),
+        ('read'),
+        ('walk the dog'),
+        ('vacuum floors')`
         );
     } catch (error) {
         console.log(error)
@@ -82,6 +89,19 @@ const rebuildDB = async() => {
     await dropTables();
     await createTables();
     await createInitialData();
+    
+    await createRobotOwners(1, 1);
+    await createRobotOwners(2, 2);
+    await createRobotOwners(3, 3);
+    await createRobotOwners(4, 1);
+    await createRobotOwners(4, 2);
+    await createRobotOwners(4, 3);
+
+    await createRobotTasks (1, 1);
+    await createRobotTasks (2, 2);
+    await createRobotTasks (3, 3);
+    await createRobotTasks (4, 4);
+
     console.log(`Rebuild Complete`)
     client.end();
     }
